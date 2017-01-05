@@ -32,4 +32,4 @@ In my case, it would be stored in `/home/victor/projects/ipfs/notes`.
 
 # License
 
-MIT 2016 - Victor Bjelkholm
+MIT 2017 - Victor Bjelkholm
