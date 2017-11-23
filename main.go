@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path"
 	"strings"
-	"syscall"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 	repo := os.Args[1]
 
 	// Make sure git is there
-	binary, err := exec.LookPath("git")
+	_, err := exec.LookPath("git")
 	if err != nil {
 		panic(err)
 	}
@@ -40,21 +40,30 @@ func main() {
 		// if "ipfs/notes" format
 		repoNamespace = strings.Split(repo, "/")[0]
 		repoName = strings.Split(repo, "/")[1]
+
 		repo = "git@github.com:" + repoNamespace + "/" + repoName + ".git"
 	}
+
+	// Make namespace + reponame lowercase
+	repoNamespace = strings.ToLower(repoNamespace)
+	repoName = strings.ToLower(repoName)
 
 	// Location where we want to clone to
 	whereToCloneTo := path.Join(rootPath, repoNamespace, repoName)
 
-	// Arguments to git
-	args := []string{"git", "clone", repo, whereToCloneTo}
+	// Setup the execution of git
+	cmd := exec.Command("git", "clone", repo, whereToCloneTo)
 
-	// Make use of already set location
-	env := os.Environ()
+	// Make sure we can see output while it runs
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
-	// Actually execute clone
-	err = syscall.Exec(binary, args, env)
+	// Actually run the command
+	err = cmd.Run()
 	if err != nil {
 		panic(err)
 	}
+
+	// Print out the final location where it was cloned (so it's easy to copy)
+	fmt.Println(whereToCloneTo)
 }
