@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+
+	"github.com/atotto/clipboard"
 )
 
 func main() {
@@ -64,6 +66,10 @@ func main() {
 		panic(err)
 	}
 
-	// Print out the final location where it was cloned (so it's easy to copy)
-	fmt.Println(whereToCloneTo)
+	// Write cloning path to clipboard
+	err = clipboard.WriteAll(whereToCloneTo)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Copied the clone destination path to your clipboard!")
 }
