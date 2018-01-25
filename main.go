@@ -53,17 +53,20 @@ func main() {
 	// Location where we want to clone to
 	whereToCloneTo := path.Join(rootPath, repoNamespace, repoName)
 
+	fmt.Println("Cloning " + repo + " into " + whereToCloneTo)
+
 	// Setup the execution of git
 	cmd := exec.Command("git", "clone", repo, whereToCloneTo)
 
-	// Make sure we can see output while it runs
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
 	// Actually run the command
-	err = cmd.Run()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		panic(err)
+		if strings.Contains(string(out), "already exists") {
+			fmt.Println("Already existed")
+		} else {
+			fmt.Println(string(out))
+			panic(err)
+		}
 	}
 
 	// Write cloning path to clipboard
